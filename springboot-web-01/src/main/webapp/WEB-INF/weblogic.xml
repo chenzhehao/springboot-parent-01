@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<weblogic-web-app xmlns="http://www.bea.com/ns/weblogic/90"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<container-descriptor>
+		<!-- 指示优先从部署项目的WEB-INF/lib目录下加载jar包，解决WegLogic与hibernate包冲突问题 -->
+		<!-- <prefer-web-inf-classes>true</prefer-web-inf-classes> -->
+		<prefer-application-packages>
+			<package-name>org.apache.log4j.*</package-name>
+			<package-name>org.apache.commons.*</package-name>
+			<package-name>org.slf4j.*</package-name>
+		</prefer-application-packages>
+	</container-descriptor>
+	<context-root>/springboot-web-01</context-root>
+</weblogic-web-app> 

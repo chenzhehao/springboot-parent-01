@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>stomp</title>
+</head>
+
+<body>
+	输入你的用户名：<input id="userName" type="text" value="lisi"/>
+	输入你要聊天的用户名：<input id="userName2" type="text" value="zhangsan"/>
+	<br />
+	<input id="text" type="text" />
+	<button onclick="send()">发送消息sendTest</button>
+	<br/>
+	<input id="textUser" type="text" />
+	<button onclick="send2()">发送消息textUser</button>
+	<br/>
+	<input id="textUser2" type="text" />
+	<button onclick="send3()">指定用户发送消息textUser2</button>
+	<br/>
+	<button onclick="subscribe2()">订阅消息/topic/sendTest</button>
+	<br/>
+	<button onclick="subscribe1()">订阅消息/topic/subscribeTest</button>
+	<br/>
+	<button onclick="sendUser()">订阅消息/user/sendUser</button>
+	<hr />
+	<button onclick="openWebSocket()">开启WebSocket连接</button>
+	<button onclick="closeWebSocket()">关闭WebSocket连接</button>
+	<hr />
+	<div id="message"></div>
+</body>
+
+<script src="../../js/stomp.min.js"></script>
+<script src="../../js/sockjs.min.js"></script>
+<script type="text/javascript">
+	// 建立连接对象（还未发起连接）
+	var socket = new SockJS("/webSocketServer");
+	// 获取 STOMP 子协议的客户端对象
+	var stompClient = Stomp.over(socket);
+	var login = document.getElementById('userName').value;
+	stompClient.connect({login:login}, function connectCallback(frame) {
+		// 连接成功时（服务器响应 CONNECTED 帧）的回调方法
+		setMessageInnerHTML("连接成功");
+		stompClient.subscribe('/app/subscribeTest', function(response) {
+			setMessageInnerHTML("已成功订阅/app/subscribeTest---一次性订阅响应");
+			var returnData = JSON.parse(response.body);
+			setMessageInnerHTML("/app/subscribeTest 你接收到的消息为:" + returnData.responseMessage);
+		});
+		stompClient.subscribe('/user/topic/greetings', function (greeting) {
+            var returnData = JSON.parse(greeting.body);
+            setMessageInnerHTML("/user/topic/greetings 你接收到的消息为:" + returnData.responseMessage);
+        });
+	}, function errorCallBack(error) {
+		// 连接失败时（服务器响应 ERROR 帧）的回调方法
+		setMessageInnerHTML("连接失败");
+	});	
+
+	//发送消息
+	function send() {
+		var message = document.getElementById('text').value;
+		var messageJson = JSON.stringify({
+			"name" : message
+		});
+		stompClient.send("/app/sendTest", {}, messageJson);
+		setMessageInnerHTML("/app/sendTest 你发送的消息:" + message);
+	}
+	
+	//发送消息
+	function send2() {
+		var message = document.getElementById('textUser').value;
+		var messageJson = JSON.stringify({
+			"name" : message
+		});
+		stompClient.send("/app/sendUser", {}, messageJson);
+		setMessageInnerHTML("/app/sendUser 你发送的消息:" + message);
+	}
+	//发送消息
+	function send3() {
+		var message = document.getElementById('textUser2').value;
+		stompClient.send("/app/msg/hellosingle", {}, JSON.stringify({'name': document.getElementById('userName').value,'id':document.getElementById('userName2').value,'information': message}));
+		setMessageInnerHTML("/app/msg/hellosingle 你发送的消息:" + message);
+	}
+
+	//订阅消息
+	function subscribe1() {
+		stompClient.subscribe('/queue/subscribeTest', function(response) {
+			setMessageInnerHTML("已成功订阅/queue/subscribeTest");
+			var returnData = JSON.parse(response.body);
+			setMessageInnerHTML("/queue/subscribeTest 你接收到的消息为:" + returnData.responseMessage);
+		}, function errorCallBack(error) {
+			setMessageInnerHTML("连接失败");
+		});
+	}
+
+	//订阅消息
+	function subscribe2() {
+		stompClient.subscribe('/topic/sendTest', function(response) {
+			setMessageInnerHTML("已成功订阅/topic/sendTest");
+			var returnData = JSON.parse(response.body);
+			setMessageInnerHTML("/topic/sendTest 你接收到的消息为:" + returnData.responseMessage);
+		}, function errorCallBack(error) {
+			setMessageInnerHTML("连接失败");
+		});
+	}
+
+	//订阅消息
+	function sendUser() {
+		stompClient.subscribe('/user/test/queue/sendUser', function(response) {
+			setMessageInnerHTML("已成功订阅/user/sendUser");
+			var returnData = JSON.parse(response.body);
+			setMessageInnerHTML("/user/sendUser 你接收到的消息为:" + returnData.responseMessage);
+		}, function errorCallBack(error) {
+			setMessageInnerHTML("连接失败");
+		});
+	}
+
+	//将消息显示在网页上
+	function setMessageInnerHTML(innerHTML) {
+		document.getElementById('message').innerHTML += innerHTML + '<br/>';
+	}
+	
+	function closeWebSocket() {
+        if(stompClient!=null){
+            stompClient.disconnect();
+        }
+        console.log('disconnected')
+    }
+</script>
+
+</html>

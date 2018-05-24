@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.czh.springboot.dao.mapper.UserMapper">
+	<resultMap id="BaseResultMap" type="com.czh.springboot.dao.UserDao">
+		<result column="id" property="id" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, name
+	</sql>
+
+	<select id="getOne" parameterType="Integer"
+		resultType="com.czh.springboot.dao.UserDao">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM user
+		where id = #{id} 
+	</select>
+
+	<select id="getOneForUpdate" parameterType="Integer"
+		resultType="com.czh.springboot.dao.UserDao">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM user
+		where id = #{id} for update
+	</select>
+
+	<select id="getOneLockShare" parameterType="Integer"
+		resultType="com.czh.springboot.dao.UserDao">
+		SELECT
+		<include refid="Base_Column_List" />
+		FROM user
+		where id = #{id} lock in share mode
+	</select>
+
+	<update id="updateUserOfNameById" parameterType="com.czh.springboot.dao.UserDao">
+		UPDATE user SET
+		name = #{name} WHERE id = #{id}
+	</update>
+
+	<select id="lockUser">
+		lock table user read
+	</select>
+	
+	<select id="unlockUser">
+		unlock table
+	</select>
+</mapper>
+    
