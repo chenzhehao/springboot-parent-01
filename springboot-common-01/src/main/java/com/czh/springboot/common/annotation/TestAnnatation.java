@@ -50,13 +50,13 @@ public @interface TestAnnatation {
 
 		@Override
 		public void initialize(TestAnnatation parameters) {
-			System.out.println(parameters);
+			System.out.println(parameters);//此处可以对注解中配置的参数做处理--每个对象使用的该注解该init方法只会执行一次，后续从缓存中取
 			s = parameters.testArg() + parameters.testArg2() + parameters.testArg3();
 		}
 
 		@Override
 		public boolean isValid(Object object, ConstraintValidatorContext constraintValidatorContext) {
-			System.out.println(object);
+			System.out.println(object);//object为使用注解的对象的值
 			System.out.println(s);
 			return object != null;
 		}
