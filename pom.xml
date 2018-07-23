@@ -23,7 +23,7 @@
 		<module>springboot-websocket-01</module>
 		<module>springboot-webservice-01</module>
 		<module>springboot-rocketmq-01</module>
-	</modules>
+    </modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
